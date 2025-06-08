@@ -40,6 +40,18 @@ const updateContact = async (req, res) => {
     res.json(result);
 };
 
+
+const updateFavoriteStatus = async (req, res) => {
+    const {id} = req.params;
+    const {favorite} = req.body;
+    const result = await contactsService.updateStatusContact(id, {favorite});
+    if (!result) {
+        throw HttpError(404);
+    }
+
+    res.status(200).json(result);
+};
+
 const deleteContact = async (req, res) => {
     const {id} = req.params;
     const result = await contactsService.removeContact(id);
@@ -54,7 +66,8 @@ const deleteContact = async (req, res) => {
 export default {
     getAllContacts: ctrlWrapper(getAllContacts),
     getOneContact: ctrlWrapper(getOneContact),
-    deleteContact: ctrlWrapper(deleteContact),
     createContact: ctrlWrapper(createContact),
     updateContact: ctrlWrapper(updateContact),
+    updateFavoriteStatus: ctrlWrapper(updateFavoriteStatus),
+    deleteContact: ctrlWrapper(deleteContact),
 }

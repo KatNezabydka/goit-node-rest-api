@@ -14,7 +14,13 @@ const updateContactSchema = Joi.object({
     "object.min": "Body must have at least one field",
 });
 
+const updateFavoriteSchema = Joi.object({
+    favorite: Joi.boolean().required(),
+});
+
+
 export default {
     createContactSchema,
-    updateContactSchema
+    updateContactSchema,
+    updateFavoriteSchema,
 };
