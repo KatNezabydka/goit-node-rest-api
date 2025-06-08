@@ -1,8 +1,8 @@
-import * as contactsService from "../services/contactsServices.js";
+import contactsService from "../services/contactsServices.js";
 import HttpError from "../helpers/HttpError.js";
-import {createContactSchema, updateContactSchema} from "../schemas/contactsSchemas.js";
+import contactsSchemas from "../schemas/contactsSchemas.js";
 
-export const getAllContacts = async (req, res, next) => {
+const getAllContacts = async (req, res, next) => {
     try {
         const result = await contactsService.listContacts();
 
@@ -13,7 +13,7 @@ export const getAllContacts = async (req, res, next) => {
 };
 
 
-export const getOneContact = async (req, res, next) => {
+const getOneContact = async (req, res, next) => {
     try {
         const {id} = req.params;
         const result = await contactsService.getContactById(id)
@@ -27,7 +27,7 @@ export const getOneContact = async (req, res, next) => {
     }
 };
 
-export const deleteContact = async (req, res, next) => {
+const deleteContact = async (req, res, next) => {
     try {
         const {id} = req.params;
         const result = await contactsService.removeContact(id);
@@ -42,9 +42,9 @@ export const deleteContact = async (req, res, next) => {
     }
 };
 
-export const createContact = async (req, res, next) => {
+const createContact = async (req, res, next) => {
         try {
-            const {error} = createContactSchema.validate(req.body);
+            const {error} = contactsSchemas.createContactSchema.validate(req.body);
             if (error) {
                 throw HttpError(400, error.message);
             }
@@ -57,9 +57,9 @@ export const createContact = async (req, res, next) => {
     }
 ;
 
-export const updateContact = async (req, res, next) => {
+const updateContact = async (req, res, next) => {
     try {
-        const {error} = updateContactSchema.validate(req.body);
+        const {error} = contactsSchemas.updateContactSchema.validate(req.body);
         if (error) {
             throw HttpError(400, error.message);
         }
@@ -75,3 +75,11 @@ export const updateContact = async (req, res, next) => {
         next(error);
     }
 };
+
+export default {
+    getAllContacts,
+    getOneContact,
+    deleteContact,
+    createContact,
+    updateContact,
+}

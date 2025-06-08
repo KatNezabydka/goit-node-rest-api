@@ -22,17 +22,17 @@ const writeContactsFile = async (contacts) => {
     }
 }
 
-export const listContacts = async () => {
+const listContacts = async () => {
     return readContactsFile()
 }
 
-export const getContactById = async (contactId) => {
+const getContactById = async (contactId) => {
     const contacts = await readContactsFile();
     const contact = contacts.find((c) => c.id === contactId);
     return contact || null;
 }
 
-export const removeContact = async (contactId) => {
+const removeContact = async (contactId) => {
     const contacts = await readContactsFile();
     const index = contacts.findIndex((c) => c.id === contactId);
 
@@ -43,7 +43,7 @@ export const removeContact = async (contactId) => {
     return removedContact;
 }
 
-export const addContact = async (data) => {
+const addContact = async (data) => {
     const contacts = await readContactsFile();
 
     const newContact = {
@@ -56,7 +56,7 @@ export const addContact = async (data) => {
     return newContact;
 }
 
-export const updateContact = async (id, data) => {
+const updateContact = async (id, data) => {
     const contacts = await readContactsFile();
     const index = contacts.findIndex(item => item.id === id);
     if (index === -1) {
@@ -67,4 +67,12 @@ export const updateContact = async (id, data) => {
     await writeContactsFile(contacts);
 
     return contacts[index];
+}
+
+export default {
+    listContacts,
+    getContactById,
+    addContact,
+    updateContact,
+    removeContact,
 }
