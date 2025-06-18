@@ -1,0 +1,1 @@
+export const minFields = 1

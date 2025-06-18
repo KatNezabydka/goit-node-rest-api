@@ -4,12 +4,12 @@ const listContacts = async () => {
     return await Contact.findAll();
 }
 
-const getContactById = async (contactId) => {
+const getContactById = async contactId => {
     const contact = await Contact.findByPk(contactId);
     return contact || null;
 }
 
-const addContact = async (data) => {
+const addContact = async data => {
     return Contact.create(data);
 }
 
@@ -31,7 +31,7 @@ const updateStatusContact = async (id, data) => {
     return contact;
 };
 
-const removeContact = async (contactId) => {
+const removeContact = async contactId => {
     const contact = await Contact.findByPk(contactId);
     if (!contact) return null;
 

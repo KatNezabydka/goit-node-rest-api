@@ -1,4 +1,5 @@
 import Joi from "joi";
+import {minFields} from "../constants/contacts.js";
 
 const createContactSchema = Joi.object({
     name: Joi.string().required(),
@@ -10,7 +11,7 @@ const updateContactSchema = Joi.object({
     name: Joi.string(),
     email: Joi.string().email({tlds: {allow: false}}),
     phone: Joi.string()
-}).min(1).messages({
+}).min(minFields).messages({
     "object.min": "Body must have at least one field",
 });
 
