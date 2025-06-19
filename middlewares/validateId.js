@@ -1,8 +1,8 @@
-import { validate as isUUID } from 'uuid';
 
 const validateId = (req, res, next) => {
-    const { id } = req.params;
-    if (!isUUID(id)) {
+    const id = Number(req.params.id);
+
+    if (Number.isNaN(id) || !Number.isInteger(id) || id <= 0) {
         return res.status(400).json({ message: "Invalid id format" });
     }
     next();
