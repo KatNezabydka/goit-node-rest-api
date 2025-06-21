@@ -4,62 +4,65 @@ import ctrlWrapper from "../decorators/ctrlWrapper.js";
 
 
 const getAllContacts = async (req, res) => {
+    const {id} = req.user;
+    const contacts = await contactsService.listContacts({owner: id});
 
-    const result = await contactsService.listContacts();
-
-    res.json(result);
+    res.json(contacts);
 };
 
 
 const getOneContact = async (req, res) => {
-
     const {id} = req.params;
-    const result = await contactsService.getContactById(id)
-    if (!result) {
+    const {id: owner} = req.user;
+    const contact = await contactsService.getContact({id, owner})
+    if (!contact) {
         throw HttpError(404);
     }
 
-    res.json(result);
+    res.json(contact.toPublicJSON());
 };
 
 const createContact = async (req, res) => {
-        const result = await contactsService.addContact(req.body);
+        const {id} = req.user;
+        const contact = await contactsService.addContact({...req.body, owner: id});
 
-        res.status(201).json(result);
+        res.status(201).json(contact.toPublicJSON());
     }
 ;
 
 const updateContact = async (req, res) => {
-
     const {id} = req.params;
-    const result = await contactsService.updateContact(id, req.body);
-    if (!result) {
+    const {id: owner} = req.user;
+    const contact = await contactsService.updateContact({id, owner}, req.body);
+    if (!contact) {
         throw HttpError(404);
     }
 
-    res.json(result);
+    res.json(contact.toPublicJSON());
 };
 
 
 const updateFavoriteStatus = async (req, res) => {
     const {id} = req.params;
+    const {id: owner} = req.user;
     const {favorite} = req.body;
-    const result = await contactsService.updateStatusContact(id, {favorite});
-    if (!result) {
+    const contact = await contactsService.updateStatusContact({id, owner}, {favorite});
+    if (!contact) {
         throw HttpError(404);
     }
 
-    res.status(200).json(result);
+    res.status(200).json(contact.toPublicJSON());
 };
 
 const deleteContact = async (req, res) => {
     const {id} = req.params;
-    const result = await contactsService.removeContact(id);
-    if (!result) {
+    const {id: owner} = req.user;
+    const contact = await contactsService.removeContact({id, owner});
+    if (!contact) {
         throw HttpError(404);
     }
 
-    res.json(result);
+    res.json(contact.toPublicJSON());
 };
 
 export default {

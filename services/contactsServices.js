@@ -1,28 +1,23 @@
 import Contact from "../models/contact.js";
 
-const listContacts = async () => {
-    return await Contact.findAll();
+export const getContact = query => Contact.findOne({where: query});
+
+const listContacts = async (query) => {
+    return await Contact.findAll({where: query});
 }
 
-const getContactById = async contactId => {
-    const contact = await Contact.findByPk(contactId);
-    return contact || null;
-}
+const addContact = async data => Contact.create(data);
 
-const addContact = async data => {
-    return Contact.create(data);
-}
-
-const updateContact = async (id, data) => {
-    const contact = await Contact.findByPk(id);
+const updateContact = async (query, data) => {
+    const contact = await getContact(query);
     if (!contact) return null;
 
     await contact.update(data);
     return contact;
 }
 
-const updateStatusContact = async (id, data) => {
-    const contact = await Contact.findByPk(id);
+const updateStatusContact = async (query, data) => {
+    const contact = await getContact(query);
     if (!contact) {
         return null;
     }
@@ -31,8 +26,8 @@ const updateStatusContact = async (id, data) => {
     return contact;
 };
 
-const removeContact = async contactId => {
-    const contact = await Contact.findByPk(contactId);
+const removeContact = async query => {
+    const contact = await getContact(query);
     if (!contact) return null;
 
     await contact.destroy();
@@ -41,7 +36,7 @@ const removeContact = async contactId => {
 
 export default {
     listContacts,
-    getContactById,
+    getContact,
     addContact,
     updateContact,
     updateStatusContact,

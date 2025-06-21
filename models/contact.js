@@ -1,10 +1,22 @@
 import sequelize from "../config/db_connection.js";
-import {DataTypes} from "sequelize";
+import {DataTypes, Model} from "sequelize";
 import {emailRegexp} from "../constants/user.js";
 import User from "./user.js";
 
-const Contact = sequelize.define(
-    'contact', {
+
+class Contact extends Model {
+    toPublicJSON() {
+        return {
+            id: this.id,
+            name: this.name,
+            email: this.email,
+            phone: this.phone,
+            favorite: this.favorite,
+        };
+    }
+}
+
+Contact.init({
         name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -31,7 +43,12 @@ const Contact = sequelize.define(
             },
             onUpdate: 'CASCADE',
             onDelete: 'CASCADE',
-        }
-    })
+        },
+    },
+    {
+        sequelize,
+        modelName: "contact",
+        tableName: "contacts",
+    });
 
 export default Contact;
