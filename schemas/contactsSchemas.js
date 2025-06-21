@@ -1,5 +1,5 @@
 import Joi from "joi";
-import {minFields} from "../constants/contacts.js";
+import {minFields} from "../constants/contact.js";
 
 const createContactSchema = Joi.object({
     name: Joi.string().required(),

@@ -1,6 +1,4 @@
-import Joi from 'joi';
-
-const { ValidationError } = Joi;
+import {UniqueConstraintError, ValidationError} from "sequelize";
 
 const ctrlWrapper = ctrl => {
     const func = async (req, res, next) => {
@@ -9,6 +7,10 @@ const ctrlWrapper = ctrl => {
         } catch (error) {
             if (error instanceof ValidationError) {
                 error.status = 400
+            }
+
+            if (error instanceof UniqueConstraintError) {
+                error.status = 409;
             }
             next(error);
         }

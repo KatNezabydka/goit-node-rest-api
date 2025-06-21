@@ -1,5 +1,7 @@
 import sequelize from "../config/db_connection.js";
 import {DataTypes} from "sequelize";
+import {emailRegexp} from "../constants/user.js";
+import User from "./user.js";
 
 const Contact = sequelize.define(
     'contact', {
@@ -10,9 +12,7 @@ const Contact = sequelize.define(
         email: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate: {
-                isEmail: {}
-            }
+            match: emailRegexp
         },
         phone: {
             type: DataTypes.STRING,
@@ -21,6 +21,16 @@ const Contact = sequelize.define(
         favorite: {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
+        },
+        owner: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: User,
+                key: 'id',
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE',
         }
     })
 

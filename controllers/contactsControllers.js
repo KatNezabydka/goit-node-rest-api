@@ -60,7 +60,6 @@ const deleteContact = async (req, res) => {
     }
 
     res.json(result);
-
 };
 
 export default {
