@@ -1,42 +1,87 @@
 import Contact from "../models/contact.js";
 
-export const getContact = query => Contact.findOne({where: query});
+const getContact = query => Contact.findOne({where: query});
 
-const listContacts = async (query) => {
-    return await Contact.findAll({where: query});
+export const getContactById = async query => {
+    try {
+        const contact = await getContact(query);
+        if (!contact) {
+            return null
+        }
+        return contact.toPublicJSON();
+    } catch (error) {
+        throw error;
+    }
 }
 
-const addContact = async data => Contact.create(data);
+
+export const listContacts = async (where, options = {}) => {
+    try {
+        const contacts = await Contact.findAll({
+            where,
+            ...options,
+        });
+
+        return contacts.map(contact => contact.toPublicJSON());
+    } catch (error) {
+        throw error;
+    }
+};
+
+const addContact = async data => {
+    try {
+        const contact = await Contact.create(data);
+
+        return contact.toPublicJSON();
+    } catch (error) {
+        throw error;
+    }
+}
 
 const updateContact = async (query, data) => {
-    const contact = await getContact(query);
-    if (!contact) return null;
+    try {
+        const contact = await getContact(query);
+        if (!contact) return null;
 
-    await contact.update(data);
-    return contact;
+        await contact.update(data);
+        return contact.toPublicJSON();
+    } catch (error) {
+        throw error;
+    }
 }
 
 const updateStatusContact = async (query, data) => {
-    const contact = await getContact(query);
-    if (!contact) {
-        return null;
-    }
+    try {
+        const contact = await getContact(query);
+        if (!contact) {
+            return null;
+        }
 
-    await contact.update(data);
-    return contact;
+        await contact.update(data);
+        return contact.toPublicJSON();
+    } catch (error) {
+        throw error;
+    }
 };
 
 const removeContact = async query => {
-    const contact = await getContact(query);
-    if (!contact) return null;
+    try {
+        const contact = await getContact(query);
+        if (!contact) {
+            return null
+        }
 
-    await contact.destroy();
-    return contact;
+        await contact.destroy();
+        return contact.toPublicJSON();
+
+    } catch (error) {
+        throw error;
+    }
 }
 
 export default {
     listContacts,
-    getContact,
+    getContactById,
     addContact,
     updateContact,
     updateStatusContact,

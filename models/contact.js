@@ -12,6 +12,8 @@ class Contact extends Model {
             email: this.email,
             phone: this.phone,
             favorite: this.favorite,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
         };
     }
 }

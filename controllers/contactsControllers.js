@@ -5,7 +5,15 @@ import ctrlWrapper from "../decorators/ctrlWrapper.js";
 
 const getAllContacts = async (req, res) => {
     const {id} = req.user;
-    const contacts = await contactsService.listContacts({owner: id});
+    const {offset, limit, favorite} = req.pagination;
+
+    const filter = {owner: id};
+
+    if (favorite !== undefined) {
+        filter.favorite = favorite;
+    }
+
+    const contacts = await contactsService.listContacts(filter, {limit, offset});
 
     res.json(contacts);
 };
@@ -14,19 +22,18 @@ const getAllContacts = async (req, res) => {
 const getOneContact = async (req, res) => {
     const {id} = req.params;
     const {id: owner} = req.user;
-    const contact = await contactsService.getContact({id, owner})
+    const contact = await contactsService.getContactById({id, owner})
     if (!contact) {
         throw HttpError(404);
     }
-
-    res.json(contact.toPublicJSON());
+    res.json(contact);
 };
 
 const createContact = async (req, res) => {
         const {id} = req.user;
         const contact = await contactsService.addContact({...req.body, owner: id});
 
-        res.status(201).json(contact.toPublicJSON());
+        res.status(201).json(contact);
     }
 ;
 
@@ -38,7 +45,7 @@ const updateContact = async (req, res) => {
         throw HttpError(404);
     }
 
-    res.json(contact.toPublicJSON());
+    res.json(contact);
 };
 
 
@@ -51,7 +58,7 @@ const updateFavoriteStatus = async (req, res) => {
         throw HttpError(404);
     }
 
-    res.status(200).json(contact.toPublicJSON());
+    res.status(200).json(contact);
 };
 
 const deleteContact = async (req, res) => {
@@ -62,7 +69,7 @@ const deleteContact = async (req, res) => {
         throw HttpError(404);
     }
 
-    res.json(contact.toPublicJSON());
+    res.json(contact);
 };
 
 export default {
