@@ -1,5 +1,5 @@
 import Joi from "joi";
-import {emailRegexp} from "../constants/user.js";
+import {emailRegexp, userSubscription} from "../constants/user.js";
 
 const authRegisterSchema = Joi.object({
     email: Joi.string().pattern(emailRegexp).required(),
@@ -11,7 +11,12 @@ const authLoginSchema = Joi.object({
     password: Joi.string().min(6).required(),
 })
 
+const updateSubscriptionSchema = Joi.object({
+    subscription: Joi.string().valid('starter', 'pro', 'business').required(),
+});
+
 export default {
     authRegisterSchema,
     authLoginSchema,
+    updateSubscriptionSchema,
 };

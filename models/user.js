@@ -1,6 +1,6 @@
 import sequelize from "../config/db_connection.js";
 import {DataTypes, Model} from "sequelize";
-import {default_subscription, emailRegexp, subscription} from "../constants/user.js";
+import {default_subscription, emailRegexp, userSubscription} from "../constants/user.js";
 
 class User extends Model {
     toPublicJSON() {
@@ -28,7 +28,7 @@ User.init(
         },
         subscription: {
             type: DataTypes.ENUM,
-            values: subscription,
+            values: userSubscription,
             defaultValue: default_subscription,
         },
         token: {
