@@ -1,5 +1,10 @@
 import * as authServices from "../services/authServices.js";
 import ctrlWrapper from "../decorators/ctrlWrapper.js";
+import {resolve, join} from "node:path";
+import {rename, unlink} from "node:fs/promises";
+import HttpError from "../helpers/httpError.js";
+
+const postersDir = resolve("public", "avatars");
 
 const register = async (req, res) => {
     const user = await authServices.registerUser(req.body);
@@ -27,13 +32,36 @@ export const getCurrent = async (req, res) => {
 }
 
 export const updateSubscription = async (req, res) => {
-    const { id } = req.user;
-    const { subscription } = req.body;
+    const {id} = req.user;
+    const {subscription} = req.body;
 
     const user = await authServices.updateSubscription(id, subscription);
 
     res.json(user)
 }
+
+export const updateAvatar = async (req, res) => {
+    const {id} = req.user;
+
+    if (!req.file) {
+        throw HttpError(404, "No file uploaded");
+    }
+    try {
+        let avatarURL = null;
+
+        const {path: oldPath, filename} = req.file;
+        const newPath = join(postersDir, filename);
+        await rename(oldPath, newPath);
+        avatarURL = join("avatars", filename);
+
+        await authServices.updateAvatar(id, avatarURL);
+
+        res.json({avatarURL});
+    } catch (error) {
+        await unlink(oldPath);
+        throw HttpError(500);
+    }
+};
 
 export default {
     register: ctrlWrapper(register),
@@ -41,4 +69,5 @@ export default {
     logout: ctrlWrapper(logout),
     getCurrent: ctrlWrapper(getCurrent),
     updateSubscription: ctrlWrapper(updateSubscription),
+    updateAvatar: ctrlWrapper(updateAvatar),
 }

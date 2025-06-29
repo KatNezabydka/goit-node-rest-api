@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import {createToken} from "../helpers/jwt.js";
 import HttpError from "../helpers/httpError.js";
+import gravatar from "gravatar";
 
 export const findUser = query => User.findOne({
     where: query,
@@ -9,7 +10,14 @@ export const findUser = query => User.findOne({
 
 export const registerUser = async payload => {
     const hashPassword = await bcrypt.hash(payload.password, 10);
-    const user = await User.create({...payload, password: hashPassword});
+
+    const avatarURL = gravatar.url(payload.email, {s: '200', r: 'pg', d: 'identicon'}, true);
+
+    const user = await User.create({
+        ...payload,
+        password: hashPassword,
+        avatarURL,
+    });
 
     return user.toPublicJSON();
 }
@@ -49,4 +57,12 @@ export const updateSubscription = async (id, subscription) => {
     await user.save();
 
     return user.toPublicJSON();
+};
+
+export const updateAvatar = async (id, avatar) => {
+    const user = await findUser({id});
+    if (!user) throw HttpError(404, "User not found");
+
+    user.avatarURL = avatar;
+    await user.save();
 };
