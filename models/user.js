@@ -7,6 +7,7 @@ class User extends Model {
         return {
             email: this.email,
             subscription: this.subscription,
+            avatarURL: this.avatarURL,
         };
     }
 }
