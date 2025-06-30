@@ -4,6 +4,7 @@ import authController from "../controllers/AuthController.js";
 import userValidation from "../validation/UserValidation.js";
 import validateBody from "../decorators/ValidateBody.js";
 import authMiddleware from "../middlewares/AuthMiddleware.js";
+import uploadMiddleware from "../middlewares/UploadMiddleware.js";
 
 class AuthRouter {
     constructor() {
@@ -42,6 +43,14 @@ class AuthRouter {
             validateBody(userValidation.userUpdateSubscriptionSchema),
             authController.updateSubscription
         );
+
+        this.router.patch(
+            "/avatars",
+            authMiddleware.authenticate.bind(authMiddleware),
+            uploadMiddleware.upload.single("avatar"),
+            authController.updateAvatar
+        );
+
     }
 
     getRouter() {

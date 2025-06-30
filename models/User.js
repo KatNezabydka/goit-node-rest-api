@@ -28,6 +28,7 @@ class User extends Model {
                     type: DataTypes.STRING,
                     defaultValue: null,
                 },
+                avatarUrl: DataTypes.STRING,
             },
             {
                 sequelize: sequelizeInstance,
@@ -47,6 +48,7 @@ class User extends Model {
         return {
             email: this.email,
             subscription: this.subscription,
+            avatarURL: this.avatarUrl,
         };
     }
 }
