@@ -4,7 +4,7 @@ const {User} = models;
 import jwtService from "../JwtService.js";
 import passwordService from "../PasswordService.js";
 import HttpError from "../../helpers/HttpError.js";
-import {findUser} from "../authServices.js";
+import gravatar from "gravatar";
 
 class AuthService {
     async findUser(query) {
@@ -13,7 +13,8 @@ class AuthService {
 
     async registerUser(payload) {
         const hashPassword = await passwordService.hash(payload.password)
-        const user = await User.create({...payload, password: hashPassword});
+        const avatarURL = gravatar.url(payload.email, {s: '200', r: 'pg', d: 'identicon'}, true);
+        const user = await User.create({...payload, password: hashPassword, avatarURL});
 
         return user.toPublicJSON();
     }
