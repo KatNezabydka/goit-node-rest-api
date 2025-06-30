@@ -1,29 +1,31 @@
 import models from "../../models/index.js";
-const { User } = models;
+
+const {User} = models;
 import jwtService from "../JwtService.js";
 import passwordService from "../PasswordService.js";
 import HttpError from "../../helpers/HttpError.js";
+import {findUser} from "../authServices.js";
 
 class AuthService {
     async findUser(query) {
-        return User.findOne({ where: query });
+        return User.findOne({where: query});
     }
 
     async registerUser(payload) {
         const hashPassword = await passwordService.hash(payload.password)
-        const user = await User.create({ ...payload, password: hashPassword });
+        const user = await User.create({...payload, password: hashPassword});
 
         return user.toPublicJSON();
     }
 
-    async loginUser({ email, password }) {
-        const user = await this.findUser({ email });
+    async loginUser({email, password}) {
+        const user = await this.findUser({email});
         if (!user) throw new HttpError(401, "Email or password is wrong");
 
         const passwordCompare = await passwordService.compare(password, user.password);
         if (!passwordCompare) throw new HttpError(401, "Email or password is wrong");
 
-        const payload = { id: user.id };
+        const payload = {id: user.id};
         const token = jwtService.createToken(payload);
 
         user.token = token;
@@ -35,8 +37,8 @@ class AuthService {
         };
     }
 
-    async logoutUser({ id }) {
-        const user = await this.findUser({ id });
+    async logoutUser({id}) {
+        const user = await this.findUser({id});
         if (!user) throw new HttpError(401, "User not found");
 
         user.token = "";
@@ -44,7 +46,7 @@ class AuthService {
     }
 
     async updateSubscription(id, subscription) {
-        const user = await this.findUser({ id });
+        const user = await this.findUser({id});
         if (!user) throw new HttpError(404, "User not found");
 
         user.subscription = subscription;
@@ -52,6 +54,16 @@ class AuthService {
 
         return user.toPublicJSON();
     }
+
+    async updateAvatar(id, avatar) {
+        const user = await this.findUser({id});
+        if (!user) throw HttpError(404, "User not found");
+
+        user.avatarURL = avatar;
+        await user.save();
+
+        return user.toPublicJSON();
+    };
 }
 
 export default new AuthService();
