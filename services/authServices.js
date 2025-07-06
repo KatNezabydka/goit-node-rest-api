@@ -3,6 +3,17 @@ import User from "../models/User.js";
 import {createToken} from "../helpers/jwt.js";
 import HttpError from "../helpers/httpError.js";
 import gravatar from "gravatar";
+import {nanoid} from "nanoid";
+import sendEmail from "../helpers/sendEmail.js";
+
+const {APP_DOMAIN} = process.env
+
+const createVerifyEmail = ({email, verificationToken}) => ({
+    to: email,
+    subject: "Verify email",
+    html: `<a href="${APP_DOMAIN}/api/auth/verify/${verificationToken}" target="_blank">Click verify email</a>`,
+})
+
 
 export const findUser = query => User.findOne({
     where: query,
@@ -10,6 +21,7 @@ export const findUser = query => User.findOne({
 
 export const registerUser = async payload => {
     const hashPassword = await bcrypt.hash(payload.password, 10);
+    const verificationToken = nanoid();
 
     const avatarURL = gravatar.url(payload.email, {s: '200', r: 'pg', d: 'identicon'}, true);
 
@@ -17,14 +29,19 @@ export const registerUser = async payload => {
         ...payload,
         password: hashPassword,
         avatarURL,
+        verificationToken,
     });
+
+    const verifyEmail = createVerifyEmail({email: payload.email, verificationToken});
+
+    await sendEmail(verifyEmail);
 
     return user.toPublicJSON();
 }
 
 export const loginUser = async ({email, password}) => {
-    const user = await findUser({email});
-    if (!user) throw HttpError(401, "Email or password is wrong");
+    const user = await findUser({email, verify: true});
+    if (!user) throw HttpError(401, "Email or password is wrong or user is not verify");
 
     const passwordCompare = await bcrypt.compare(password, user.password);
     if (!passwordCompare) throw HttpError(401, "Email or password is wrong");
@@ -66,3 +83,19 @@ export const updateAvatar = async (id, avatar) => {
     user.avatarURL = avatar;
     await user.save();
 };
+
+export const verifyUser = async verificationToken => {
+    const user = await findUser({verificationToken});
+    if (!user) throw HttpError(404, "User not found");
+
+    return user.update({verify: true, verificationToken: null});
+}
+
+export const resendVerifyUser = async email => {
+    const user = await findUser({email, verify: false});
+    if (!user) throw HttpError(401, "Email not found or already verified");
+
+    const verifyEmail = createVerifyEmail({email, verificationToken: user.verificationToken});
+
+    await sendEmail(verifyEmail);
+}
